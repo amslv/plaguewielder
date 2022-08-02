@@ -50,8 +50,24 @@ class S3CloudManager:
                 return False
             return True
 
-    def get_json(self, filename):
-        return 0
+    def get_json(self, file_name):
+        if file_name is None:
+            return False
+        else:
+            try:
+                print("todo")
+                #self.s3_client.delete_object(Bucket=self.bucket_name, Key=file_name)
+            except ClientError as e:
+                return False
+            return True
 
-    def get_blob(self, filename):
-        return 0
+    def get_blob(self, file_name):
+        if file_name is None:
+            return False
+        else:
+            try:
+                print("todo")
+                #self.s3_client.delete_object(Bucket=self.bucket_name, Key=file_name)
+            except ClientError as e:
+                return False
+            return True
