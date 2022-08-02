@@ -13,7 +13,7 @@ class S3CloudManager:
         boto3.set_stream_logger(name='botocore')  # this enables debug tracing
         session = boto3.session.Session()
         self.s3_client = session.client(
-            service_name='s3',
+            service_name=os.getenv('SERVICE_NAME'),
             aws_access_key_id=os.getenv('ACCESS_KEY'),
             aws_secret_access_key=os.getenv('ACCESS_SECRET'),
             endpoint_url=os.getenv('ENDPOINT_URL'),
@@ -24,18 +24,34 @@ class S3CloudManager:
         if object_name is None:
             object_name = os.path.basename(file_name)
         try:
-            response = self.s3_client.upload_file(file_name, self.bucket_name, object_name)
+            self.s3_client.upload_file(file_name, self.bucket_name, object_name)
         except ClientError as e:
-            print("deu ruim")
             return False
-        print("deu bom")
         return True
         
-    def delete(self, filename):
-        return 0
-    def get_file(self, filename):
-        return 0
+    def delete(self, file_name):
+        if file_name is None:
+            return False
+        else:
+            try:
+                self.s3_client.delete_object(Bucket=self.bucket_name, Key=file_name)
+            except ClientError as e:
+                return False
+            return True
+
+
+    def get_file(self, file_name, object_name=None):
+        if object_name is None:
+            object_name = os.path.basename(file_name)
+            try:
+                with open(file_name, 'wb') as f:
+                    self.s3_client.download_fileobj(self.bucket_name, object_name, f)
+            except ClientError as e:
+                return False
+            return True
+
     def get_json(self, filename):
         return 0
+
     def get_blob(self, filename):
         return 0
